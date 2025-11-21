@@ -23,11 +23,11 @@ public class SecurityConfig {
     @Bean
     public UserDetailsService userDetails(){
         UserDetails user1= User.withUsername("user_name")
-                .password("my_password1")
+                .password(new BCryptPasswordEncoder().encode("my_password1"))
                 .roles("Admin")
                 .build();
         UserDetails user2= User.withUsername("user_name_qa")
-                .password("my_password2")
+                .password(new BCryptPasswordEncoder().encode("my_password2"))
                 .roles("QA")
                 .build();
         return new InMemoryUserDetailsManager(user1,user2);
