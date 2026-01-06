@@ -31,6 +31,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         //if not the do nothing move to other filter in the filter chain
         if(!request.getServletPath().equals("/generate-token")){
               filterChain.doFilter(request,response);
+              return;
         }
         ObjectMapper objectMapper= new ObjectMapper();
         LoginRequest loginRequest= objectMapper.readValue(request.getInputStream(), LoginRequest.class);
@@ -42,7 +43,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
 
         Authentication authResult= authenticationManager.authenticate(authToken);
         if(authResult.isAuthenticated()){
-            String token= jwtUtil.generateToken(authResult.getName(),15);
+            String token= jwtUtil.generateToken(authResult.getName(),60);
             response.setHeader("Authorization","Bearer "+token);
         }
     }

@@ -1,5 +1,6 @@
 package com.shreyans.springmodules.util;
 
+import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
@@ -22,5 +23,17 @@ public class JWTUtil {
                 .setExpiration(new Date(System.currentTimeMillis()+expiryTimeInMinute*60*1000))//in miliseconds
                 .signWith(key, SignatureAlgorithm.HS256)
                 .compact();
+    }
+
+    public String validateAndExtractUsername(String token){
+        try{
+            return Jwts.parserBuilder()
+                    .setSigningKey(key)
+                    .build().parseClaimsJws(token)
+                    .getBody()
+                    .getSubject();
+        }catch (JwtException ex){
+            return null; // invalid or expired Token
+        }
     }
 }

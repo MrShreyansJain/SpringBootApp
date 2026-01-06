@@ -1,6 +1,8 @@
 package com.shreyans.springmodules.config;
 
+import com.shreyans.springmodules.authenticationProvider.JwtAuthenticationProvider;
 import com.shreyans.springmodules.filters.JWTAuthenticationFilter;
+import com.shreyans.springmodules.filters.JWTValidationFilter;
 import com.shreyans.springmodules.util.JWTUtil;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -45,8 +47,13 @@ public class SecurityConfig {
     }
 
     @Bean
+    JwtAuthenticationProvider jwtAuthenticationProvider(){
+        return  new JwtAuthenticationProvider(jwtUtil,userDetailsService);
+    }
+
+    @Bean
     public AuthenticationManager authenticationManager(){
-        return new ProviderManager(Arrays.asList(daoAuthenticationProvider()));
+        return new ProviderManager(Arrays.asList(daoAuthenticationProvider(),jwtAuthenticationProvider()));
     }
 
 
@@ -93,17 +100,20 @@ public class SecurityConfig {
     //single login the every thing works
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-        //authentication filter for login
+        //authentication filter for generating token
         JWTAuthenticationFilter jwtAuthenticationFilter= new JWTAuthenticationFilter(authenticationManager(),jwtUtil);
 
 
+        //authentication filter for validating the token supplied
+        JWTValidationFilter jwtValidationFilter= new JWTValidationFilter(authenticationManager());
         http.authorizeHttpRequests(auth->auth
                         .requestMatchers("/auth/saveUserAuth").permitAll()
                         .anyRequest().authenticated()
                 ).sessionManagement(session->session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrf->csrf.disable())
                 //generate token filter before other filter is added
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(jwtValidationFilter,JWTAuthenticationFilter.class);
                // .formLogin(Customizer.withDefaults());
         return http.build();
     }
