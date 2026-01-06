@@ -1,10 +1,12 @@
 package com.shreyans.springmodules.service;
 
+import com.shreyans.springmodules.entity.RegistrationDetails;
 import com.shreyans.springmodules.entity.Student;
+import com.shreyans.springmodules.repository.RegistrationDetailsRepository;
 import com.shreyans.springmodules.repository.StudentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -12,14 +14,22 @@ import java.util.List;
 public class StudentService {
     private final StudentRepository studentRepository;
 
+    @Autowired
+    private RegistrationDetailsRepository registrationDetailsRepository;
+
     public StudentService(StudentRepository studentRepository) {
         this.studentRepository = studentRepository;
     }
     public List<Student> getAllStudent(){
         return studentRepository.findAll();
     }
-    public Student saveStudent(@RequestBody Student studentDetails){
+    @Transactional
+    public Student saveStudent(Student studentDetails){
         return studentRepository.save(studentDetails);
+    }
+
+    public RegistrationDetails updateRegistrationDetails(RegistrationDetails registrationDetails){
+      return registrationDetailsRepository.save(registrationDetails);
     }
 
 

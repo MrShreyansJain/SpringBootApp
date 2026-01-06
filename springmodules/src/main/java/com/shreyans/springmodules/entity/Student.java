@@ -13,6 +13,7 @@ public class Student {
     private String lastName;
     private int classNo;
     private String section;
+    private String registrationDate;
 
     public long getId() {
         return id;
@@ -53,4 +54,8 @@ public class Student {
     public void setSection(String section) {
         this.section = section;
     }
+
+    public String getRegistrationDate() {return registrationDate;}
+
+    public void setRegistrationDate(String registrationDate) {this.registrationDate = registrationDate;}
 }
